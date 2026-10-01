@@ -1,0 +1,12 @@
+name: Build Workflow
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-that-is-empty:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Empty build step'
