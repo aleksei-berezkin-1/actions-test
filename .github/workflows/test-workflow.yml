@@ -6,6 +6,10 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-that-fails:
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
   test-that-fails:
     runs-on: ubuntu-latest
     steps:
@@ -25,10 +29,17 @@ jobs:
           node-version: 22
       - run: npm test -- --pleasePass
   summary-job:
-    needs: [test-that-fails, test-that-passes]
+    needs: [build-that-fails, test-that-fails, test-that-passes]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - run: |
+          echo "build-that-fails: ${{ needs.build-that-fails.result }}"
           echo "test-that-fails: ${{ needs.test-that-fails.result }}"
           echo "test-that-passes: ${{ needs.test-that-passes.result }}"
+          failed_count=$(echo '${{ join(needs.*.result) }}' | grep -o failure | wc -l)
+          echo $failed_count > failed-count.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: failed-count-artifact
+          path: failed-count.txt

@@ -9,6 +9,14 @@ on:
 jobs:
   build-that-is-empty:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
     steps:
       - run: echo 'Test Workflow result is ${{ github.event.workflow_run.conclusion }}'
+      - uses: actions/download-artifact@v8
+        with:
+          name: failed-count-artifact
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - run: echo "Failed jobs count is $(cat failed-count.txt)"
       - run: echo 'Empty build step'
