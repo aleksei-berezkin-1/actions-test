@@ -1,12 +1,14 @@
 name: Build Workflow
 
 on:
-  push:
-  pull_request:
+  workflow_run:
+    workflows: [Test Workflow]
+    types: [completed]
   workflow_dispatch:
 
 jobs:
   build-that-is-empty:
     runs-on: ubuntu-latest
     steps:
+      - run: echo 'Test Workflow result is ${{ github.event.workflow_run.conclusion }}'
       - run: echo 'Empty build step'

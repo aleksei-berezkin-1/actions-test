@@ -14,6 +14,8 @@ jobs:
         with:
           node-version: 22
       - run: npm test
+      - if: failure()
+        run: echo 'test-that-fails job indeed failed'
   test-that-passes:
     runs-on: ubuntu-latest
     steps:
@@ -22,3 +24,11 @@ jobs:
         with:
           node-version: 22
       - run: npm test -- --pleasePass
+  summary-job:
+    needs: [test-that-fails, test-that-passes]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "test-that-fails: ${{ needs.test-that-fails.result }}"
+          echo "test-that-passes: ${{ needs.test-that-passes.result }}"
